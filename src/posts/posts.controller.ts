@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiProperty } from '@nestjs/swagger';
+import { PostModel } from './post.model';
 
 class CreatePostDto {
     @ApiProperty({ description: '文章标题' })
@@ -13,12 +14,8 @@ class CreatePostDto {
 export class PostsController {
     @Get('/')
     @ApiOperation({ summary: '显示文章列表' })
-    index() {
-        return [
-            {
-                id: 1
-            }
-        ]
+    async index() {
+        return await PostModel.find()
     }
 
     @Post()
