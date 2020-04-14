@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as mongoose from 'mongoose'
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   mongoose.connect('mongodb://localhost/iceymoon-blog-api',{
@@ -10,6 +11,8 @@ async function bootstrap() {
     useCreateIndex: true
   })
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(new ValidationPipe())
 
   const options = new DocumentBuilder()
     .setTitle('iceymoon-blog-api')
