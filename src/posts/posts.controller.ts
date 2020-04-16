@@ -18,6 +18,12 @@ export class PostsController {
         return await PostModel.find()
     }
 
+    @Get('/count')
+    @ApiOperation({ summary: '文章数量' })
+    async count() {
+        return await PostModel.find().count()
+    }
+
     @Post()
     @ApiOperation({ summary: '创建文章' })
     async create(@Body() createPostDto: PostDto) {
