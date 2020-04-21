@@ -1,6 +1,7 @@
 import { getModelForClass, prop } from '@typegoose/typegoose'
+import { TimeStamps } from '@typegoose/typegoose/lib/defaultClasses'
 
-export class Post {
+export class Post extends TimeStamps {
     @prop()
     title: string
     @prop()
