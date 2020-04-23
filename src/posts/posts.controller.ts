@@ -27,8 +27,15 @@ export class PostsController {
     @Post()
     @ApiOperation({ summary: '创建文章' })
     async create(@Body() createPostDto: PostDto) {
-        await PostModel.create(createPostDto)
-        return { success: true }
+        const { title, content } = createPostDto
+        await PostModel.create({
+            title: title,
+            content: content,
+            viewcount: 0 // 初始化阅读数为0
+        })
+        return {
+            msg: "文章发布成功"
+        }
     }
 
     @Get(':id')
@@ -37,12 +44,24 @@ export class PostsController {
         return await PostModel.findById(id)
     }
 
+    @Put(':id/addview')
+    @ApiOperation({ summary: '阅读数加1' })
+    async viewAddOne(@Param('id') id: string) {
+        let { viewcount } = await PostModel.findById(id, { viewcount: 1 }) // 解构赋值，把 id 对应的文章的阅读数取出来
+        viewcount++ // 阅读数+1
+        await PostModel.findByIdAndUpdate(id, { $set: { viewcount: viewcount } }) // 更新阅读数
+        return {
+            msg: "view+1"
+        }
+    }
+
     @Put(':id')
     @ApiOperation({ summary: '编辑文章' })
     async update(@Param('id') id: string, @Body() updatePostDto: PostDto) {
-        await PostModel.findByIdAndUpdate(id, updatePostDto)
+        const { title, content } = updatePostDto
+        await PostModel.findByIdAndUpdate(id, { $set: { title: title, content: content } })
         return {
-            success: true
+            msg: "文章更新成功"
         }
     }
 
@@ -51,7 +70,7 @@ export class PostsController {
     async remove(@Param('id') id: string) {
         await PostModel.findByIdAndDelete(id)
         return {
-            success: true
+            msg: "文章删除成功"
         }
     }
 }

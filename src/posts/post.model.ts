@@ -6,6 +6,8 @@ export class Post extends TimeStamps {
     title: string
     @prop()
     content: string
+    @prop()
+    viewcount: number
 }
 
 export const PostModel = getModelForClass(Post)
