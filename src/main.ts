@@ -5,11 +5,11 @@ import * as mongoose from 'mongoose'
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
-  mongoose.connect('mongodb://localhost/iceymoon-blog-api',{
+  mongoose.connect('mongodb://localhost/iceymoon-blog-api', {
     useNewUrlParser: true,
     useFindAndModify: false,
     useCreateIndex: true
-  })
+  }).catch(err => { console.log(err) })
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(new ValidationPipe())

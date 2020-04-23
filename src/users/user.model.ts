@@ -5,6 +5,8 @@ export class User {
     name: string
     @prop()
     password: string
+    @prop()
+    role: number
 }
 
 export const UserModel = getModelForClass(User)
