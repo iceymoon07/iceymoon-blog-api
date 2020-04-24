@@ -1,11 +1,14 @@
 import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiProperty } from '@nestjs/swagger';
 import { PostModel } from './post.model';
+import { IsNotEmpty } from 'class-validator'
 
 class PostDto {
     @ApiProperty({ description: '文章标题', example: '默认文章标题' })
+    @IsNotEmpty({ message: '未读取到标题' })
     title: string
     @ApiProperty({ description: '文章内容', example: '默认文章内容' })
+    @IsNotEmpty({ message: '文章内容不能为空' })
     content: string
 }
 
@@ -47,9 +50,7 @@ export class PostsController {
     @Put(':id/addview')
     @ApiOperation({ summary: '阅读数加1' })
     async viewAddOne(@Param('id') id: string) {
-        let { viewcount } = await PostModel.findById(id, { viewcount: 1 }) // 解构赋值，把 id 对应的文章的阅读数取出来
-        viewcount++ // 阅读数+1
-        await PostModel.findByIdAndUpdate(id, { $set: { viewcount: viewcount } }) // 更新阅读数
+        await PostModel.findByIdAndUpdate(id, { $inc: { viewcount: 1 } }) // 更新阅读数，用 $inc 操作符自增1
         return {
             msg: "view+1"
         }
