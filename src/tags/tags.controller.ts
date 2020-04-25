@@ -20,7 +20,7 @@ export class TagsController {
     }
 
     @Get(':id')
-    @ApiOperation({ summary: '列出 id 对应的单个标签' })
+    @ApiOperation({ summary: '根据 id 查找标签' })
     async detail(@Param('id') id: string) {
         return await TagsModel.findById(id)
     }
