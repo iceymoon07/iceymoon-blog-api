@@ -3,10 +3,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PostsModule } from './posts/posts.module';
 import { UsersModule } from './users/users.module';
-import { TagsModule } from './tags/tags.module';
 
 @Module({
-  imports: [PostsModule, UsersModule, TagsModule],
+  imports: [PostsModule, UsersModule],
   controllers: [AppController],
   providers: [AppService],
 })

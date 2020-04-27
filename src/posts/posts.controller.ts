@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiProperty } from '@nestjs/swagger';
 import { PostModel } from './post.model';
 import { IsNotEmpty, ArrayNotEmpty } from 'class-validator'
 
@@ -25,9 +25,27 @@ export class PostsController {
     }
 
     @Get('count')
-    @ApiOperation({ summary: '文章数量' })
+    @ApiOperation({ summary: '所有文章数量' })
     async count() {
         return await PostModel.find().count()
+    }
+
+    @Get('tags')
+    @ApiOperation({ summary: '查找所有分类标签,以及其对应的文章数量' })
+    async tags() {
+        const originArr = await PostModel.find({}, { tags: 1, _id: 0 }) // 查询出所有文章的 tags 字段
+        let tempArr: string[] = []
+        for (let i = 0; i < originArr.length; i++) {
+            tempArr = tempArr.concat(originArr[i].tags)
+        } // 用 contact 把所有文章的 tags 连接成一个数组
+        let setArr = Array.from(new Set(tempArr)) // 数组去重
+        let resultArr: object[] = []
+        for (let i = 0; i < setArr.length; i++) {
+            let name = setArr[i]
+            let count = await PostModel.find({ tags: name }).count()  // 对数组中的每一个 tag 查询其对应的文章数量
+            resultArr.push({ name: name, count: count }) // 组装一个对象 push 进最终要返回的结果数组
+        }
+        return resultArr
     }
 
     @Post()
@@ -37,7 +55,7 @@ export class PostsController {
         await PostModel.create({
             title: title,
             content: content,
-            viewcount: 0, // 初始化阅读数为0
+            viewCount: 0, // 初始化阅读数为0
             tags: tags
         })
         return {
@@ -51,7 +69,7 @@ export class PostsController {
         return await PostModel.findById(id)
     }
 
-    @Get(':tag')
+    @Get('tags/:tag')
     @ApiOperation({ summary: '根据标签名查找文章' })
     async category(@Param('tag') tag: string) {
         return await PostModel.find({ tags: tag })
@@ -60,7 +78,7 @@ export class PostsController {
     @Put(':id/addview')
     @ApiOperation({ summary: '阅读数加1' })
     async viewAddOne(@Param('id') id: string) {
-        await PostModel.findByIdAndUpdate(id, { $inc: { viewcount: 1 } }) // 更新阅读数，用 $inc 操作符自增1
+        await PostModel.findByIdAndUpdate(id, { $inc: { viewCount: 1 } }) // 更新阅读数，用 $inc 操作符自增1
         return {
             msg: "view+1"
         }

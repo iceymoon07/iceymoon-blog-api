@@ -7,7 +7,7 @@ export class Post extends TimeStamps {
     @prop()
     content: string
     @prop()
-    viewcount: number
+    viewCount: number
     @prop()
     tags: string[]
 }
