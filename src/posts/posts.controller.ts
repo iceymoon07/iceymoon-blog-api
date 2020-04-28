@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiProperty } from '@nestjs/swagger';
 import { PostModel } from './post.model';
 import { IsNotEmpty, ArrayNotEmpty } from 'class-validator'
@@ -15,6 +15,13 @@ class PostDto {
     tags: string[]
 }
 
+class QueryOption {
+    @ApiProperty({ description: '按什么字段排序' })
+    orderBy: string
+    @ApiProperty({ description: '升序还是降序' })
+    ascOrDesc: number
+}
+
 @Controller('posts')
 @ApiTags('文章')
 export class PostsController {
@@ -24,10 +31,21 @@ export class PostsController {
         return await PostModel.find()
     }
 
+    @Get('info')
+    @ApiOperation({ summary: '按创建时间或阅读量顺序，查找所有文章信息（不要文章内容字段）' })
+    async info(@Query() query: QueryOption) {
+        if (query.orderBy === 'time') {
+            return await PostModel.find({}, { content: 0 }).sort({ createdAt: query.ascOrDesc })
+        }
+        else {
+            return await PostModel.find({}, { content: 0 }).sort({ viewCount: query.ascOrDesc })
+        }
+    }
+
     @Get('count')
     @ApiOperation({ summary: '所有文章数量' })
     async count() {
-        return await PostModel.find().count()
+        return await PostModel.countDocuments()
     }
 
     @Get('tags')
@@ -42,7 +60,7 @@ export class PostsController {
         let resultArr: object[] = []
         for (let i = 0; i < setArr.length; i++) {
             let name = setArr[i]
-            let count = await PostModel.find({ tags: name }).count()  // 对数组中的每一个 tag 查询其对应的文章数量
+            let count = await PostModel.countDocuments({ tags: name })  // 对数组中的每一个 tag 查询其对应的文章数量
             resultArr.push({ name: name, count: count }) // 组装一个对象 push 进最终要返回的结果数组
         }
         return resultArr
