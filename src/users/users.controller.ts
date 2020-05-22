@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete, Param, Req } from '@nestjs/common';
 import { UserModel } from './user.model'
 import { ApiProperty, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { USER_ROLE } from 'src/common/constant';
+import { Request } from 'express';
 
 class UserDto {
     @ApiProperty({ description: '用户名', example: 'admin' })
@@ -12,8 +13,15 @@ class UserDto {
     repassword: string
 }
 
+class LoginDto {
+    @ApiProperty({ description: '用户名' })
+    name: string
+    @ApiProperty({ description: '密码' })
+    password: string
+}
+
 @Controller('users')
-@ApiTags('用户账号')
+@ApiTags('用户注册登录')
 export class UsersController {
     @Get('/')
     @ApiOperation({ summary: '列出所有用户信息' })
@@ -43,6 +51,41 @@ export class UsersController {
         })
         return {
             msg: "注册成功"
+        }
+    }
+
+    @Delete(':id')
+    @ApiOperation({ summary: '删除用户' })
+    async remove(@Param('id') id: string) {
+        await UserModel.findByIdAndDelete(id)
+        return {
+            msg: '用户删除成功'
+        }
+    }
+
+    @Post('login')
+    @ApiOperation({ summary: '登录' })
+    async login(@Body() loginDto: LoginDto, @Req() req: Request) {
+        const { name, password } = loginDto
+        const user = await UserModel.findOne({ name: name, password: password })
+        if (user) {
+            req.session.name = name
+            return {
+                msg: '登录成功'
+            }
+        } else {
+            return {
+                msg: '账号或密码错误'
+            }
+        }
+    }
+
+    @Get('logout')
+    @ApiOperation({ summary: '注销' })
+    async logout(@Req() req: Request) {
+        req.session.destroy((err) => { })
+        return {
+            msg: '已注销'
         }
     }
 }
