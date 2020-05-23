@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Delete, Param, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete, Param, Req, Res } from '@nestjs/common';
 import { UserModel } from './user.model'
 import { ApiProperty, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { USER_ROLE } from 'src/common/constant';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 class UserDto {
     @ApiProperty({ description: '用户名', example: 'admin' })
@@ -65,18 +65,18 @@ export class UsersController {
 
     @Post('login')
     @ApiOperation({ summary: '登录' })
-    async login(@Body() loginDto: LoginDto, @Req() req: Request) {
+    async login(@Body() loginDto: LoginDto, @Req() req: Request, @Res() res: Response) {
         const { name, password } = loginDto
         const user = await UserModel.findOne({ name: name, password: password })
         if (user) {
             req.session.name = name
-            return {
+            res.send({
                 msg: '登录成功'
-            }
+            })
         } else {
-            return {
-                msg: '账号或密码错误'
-            }
+            res.status(404).send({
+                message: '账号或密码错误'
+            })
         }
     }
 
@@ -87,5 +87,11 @@ export class UsersController {
         return {
             msg: '已注销'
         }
+    }
+
+    @Get('islogin')
+    @ApiOperation({ summary: '是否已登录' })
+    async isLogin(@Req() req: Request) {
+        return req.session.name === 'admin'
     }
 }
