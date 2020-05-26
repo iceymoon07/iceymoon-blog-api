@@ -9,4 +9,9 @@ export class AppController {
   index() {
     return 'index'
   }
+
+  @Get('env')
+  env() {
+    return process.env.NODE_ENV
+  }
 }
