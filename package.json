@@ -9,7 +9,7 @@
     "prebuild": "rimraf dist",
     "build": "nest build --webpackPath webpack.production.config.js",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "start": "nest start --webpackPath webpack.production.config.js",
     "start:dev": "nest start --watch --webpackPath webpack.development.config.js",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",

@@ -56,11 +56,11 @@ export class PostsController {
         for (let i = 0; i < originArr.length; i++) {
             tempArr = tempArr.concat(originArr[i].tags)
         } // 用 contact 把所有文章的 tags 连接成一个数组
-        let setArr = Array.from(new Set(tempArr)) // 数组去重
-        let resultArr: object[] = []
+        const setArr = Array.from(new Set(tempArr)) // 数组去重
+        const resultArr: object[] = []
         for (let i = 0; i < setArr.length; i++) {
-            let name = setArr[i]
-            let count = await PostModel.countDocuments({ tags: name })  // 对数组中的每一个 tag 查询其对应的文章数量
+            const name = setArr[i]
+            const count = await PostModel.countDocuments({ tags: name })  // 对数组中的每一个 tag 查询其对应的文章数量
             resultArr.push({ name: name, count: count }) // 组装一个对象 push 进最终要返回的结果数组
         }
         return resultArr
