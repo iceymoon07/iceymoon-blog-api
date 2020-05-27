@@ -7,7 +7,7 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   mongoose.connect(process.env.NODE_ENV === 'production' ?
-    'mongodb://admin:zy19961107@47.105.223.91/iceymoon-blog-api' : 'mongodb://localhost/iceymoon-blog-api',
+    'mongodb://47.105.223.91/iceymoon-blog-api' : 'mongodb://localhost/iceymoon-blog-api',
     {
       useNewUrlParser: true,
       useFindAndModify: false,
